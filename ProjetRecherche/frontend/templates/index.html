@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Suivi des Devises</title>
+    <link rel="stylesheet" type="text/css" href="/static/css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom"></script>
+</head>
+<body>
+    <h1>Suivi des Devises</h1>
+    <select id="devise-selector" onchange="fetchCours()">
+        <option value="">Sélectionnez une devise</option>
+    </select>
+
+    <div id="coursChart-container">
+        <canvas id="coursChart" width="2000" height="600"></canvas>
+    </div>
+
+    <h2>Charger un fichier CSV</h2>
+    <form id="csv-form" enctype="multipart/form-data">
+        <input type="file" id="csv-file" name="file">
+        <button type="button" onclick="uploadCSV()">Charger</button>
+    </form>
+
+    <script>
+        let chart;
+
+        document.addEventListener("DOMContentLoaded", function () {
+            fetchDevises();
+        });
+
+        function fetchDevises() {
+            fetch('/api/devises')
+                .then(response => response.json())
+                .then(data => {
+                    const selector = document.getElementById('devise-selector');
+                    selector.innerHTML = '<option value="">Sélectionnez une devise</option>'; // Reset options
+                    data.forEach(devise => {
+                        const option = document.createElement('option');
+                        option.value = devise.symbole;
+                        option.text = devise.nom;
+                        selector.add(option);
+                    });
+                });
+        }
+
+        function fetchCours() {
+            const symbole = document.getElementById('devise-selector').value;
+            if (symbole) {
+                fetch(`/api/cours/${symbole}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        // Détruire l'ancien graphique s'il existe
+                        if (chart) {
+                            chart.destroy();
+                        }
+
+                        const ctx = document.getElementById('coursChart').getContext('2d');
+                        chart = new Chart(ctx, {
+                            type: 'line',
+                            data: {
+                                labels: data.map(c => new Date(c.date).toLocaleString()), // Convertir les dates pour inclure l'heure précise
+                                datasets: [{
+                                    label: `Cours de ${symbole}`,
+                                    data: data.map(c => parseFloat(c.valeur).toFixed(6)), // Afficher jusqu'à 6 décimales
+                                    borderColor: 'rgba(75, 192, 192, 1)',
+                                    fill: false
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                plugins: {
+                                    zoom: {
+                                        pan: {
+                                            enabled: true,
+                                            mode: 'xy'
+                                        },
+                                        zoom: {
+                                            pinch: {
+                                                enabled: true
+                                            },
+                                            wheel: {
+                                                enabled: true
+                                            },
+                                            mode: 'xy'
+                                        }
+                                    },
+                                    tooltip: {
+                                        callbacks: {
+                                            label: function(context) {
+                                                let label = context.dataset.label || '';
+                                                if (label) {
+                                                    label += ': ';
+                                                }
+                                                if (context.parsed.y !== null) {
+                                                    label += parseFloat(context.parsed.y).toFixed(6);
+                                                }
+                                                return label;
+                                            },
+                                            title: function(context) {
+                                                return context[0].label;
+                                            }
+                                        }
+                                    }
+                                },
+                                scales: {
+                                    x: {
+                                        display: true,
+                                        title: {
+                                            display: true,
+                                            text: 'Date'
+                                        }
+                                    },
+                                    y: {
+                                        display: true,
+                                        title: {
+                                            display: true,
+                                            text: 'Valeur'
+                                        }
+                                    }
+                                }
+                            }
+                        });
+                    });
+            }
+        }
+
+        function uploadCSV() {
+            const formData = new FormData();
+            const file = document.getElementById('csv-file').files[0];
+            formData.append('file', file);
+
+            fetch('/api/cours/upload', {
+                method: 'POST',
+                body: formData
+            })
+                .then(response => {
+                    if (response.ok) {
+                        alert('Fichier chargé avec succès');
+                        fetchDevises(); // Recharger la liste des devises disponibles
+                    } else {
+                        response.json().then(data => {
+                            alert('Erreur lors du chargement du fichier: ' + data.message);
+                        });
+                    }
+                });
+        }
+    </script>
+</body>
+</html>
