@@ -1,6 +1,6 @@
 # Mini-Projet : Application de Suivi des Cours des Devises
 
-#Equipe
+## Equipe :
 Jules Dubayle
 
 ## Description
