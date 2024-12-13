@@ -24,8 +24,10 @@ L'objectif de ce projet est de créer une application pour suivre les cours de c
   - `valeur` : Valeur du cours.
   - `date` : Date du cours.
 
-## Creation Base (SQL) : 
-'''-- Créer la base de données
+## Script SQL pour Créer la Base de Données
+
+```sql
+-- Créer la base de données
 CREATE DATABASE IF NOT EXISTS suivi_devises;
 USE suivi_devises;
 
@@ -44,7 +46,7 @@ CREATE TABLE IF NOT EXISTS cours (
     date DATETIME NOT NULL,
     FOREIGN KEY (devise_id) REFERENCES devises(id)
 );
-'''
+
 
 ## Fonctionnalités
 - Affichage des cours des devises sous forme graphique.
