@@ -24,6 +24,28 @@ L'objectif de ce projet est de créer une application pour suivre les cours de c
   - `valeur` : Valeur du cours.
   - `date` : Date du cours.
 
+## Creation Base (SQL) : 
+'''-- Créer la base de données
+CREATE DATABASE IF NOT EXISTS suivi_devises;
+USE suivi_devises;
+
+-- Créer la table 'devises'
+CREATE TABLE IF NOT EXISTS devises (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nom VARCHAR(50) NOT NULL,
+    symbole VARCHAR(10) NOT NULL
+);
+
+-- Créer la table 'cours'
+CREATE TABLE IF NOT EXISTS cours (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    devise_id INT NOT NULL,
+    valeur DECIMAL(20, 15) NOT NULL, -- Haute précision pour les valeurs de cours
+    date DATETIME NOT NULL,
+    FOREIGN KEY (devise_id) REFERENCES devises(id)
+);
+'''
+
 ## Fonctionnalités
 - Affichage des cours des devises sous forme graphique.
 - Chargement de nouvelles devises et de cours via un fichier CSV.
