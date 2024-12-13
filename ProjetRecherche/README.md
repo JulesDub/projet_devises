@@ -47,5 +47,5 @@ L'objectif de ce projet est de créer une application pour suivre les cours de c
 ### Backend
 1. Cloner le dépôt :
    ```sh
-   git clone https://github.com/votre-compte/mini-projet-suivi-devises.git
-   cd mini-projet-suivi-devises/backend
+   git clone https://github.com/JulesDub/projet_devises.git
+   cd projet_devises
