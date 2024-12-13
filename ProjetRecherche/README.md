@@ -77,3 +77,6 @@ CREATE TABLE IF NOT EXISTS cours (
    ```sh
    git clone https://github.com/JulesDub/projet_devises.git
    cd projet_devises
+
+## Demo vidéo
+https://youtu.be/hy_M6WEWt0w?si=oCpzBUsMeWg6xZph
