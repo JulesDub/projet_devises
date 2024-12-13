@@ -46,6 +46,7 @@ CREATE TABLE IF NOT EXISTS cours (
     date DATETIME NOT NULL,
     FOREIGN KEY (devise_id) REFERENCES devises(id)
 );
+```
 
 
 ## Fonctionnalités
